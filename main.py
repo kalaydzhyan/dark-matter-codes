@@ -8,7 +8,7 @@ from statsmodels.nonparametric.smoothers_lowess import lowess
 
 """ Some global variables """
 mass = 1 # mass of the scalar field, add it later
-number_sources = 100
+number_sources = 1000
 observation_time = 1000
 sampling_time = 1
 
@@ -18,7 +18,7 @@ frequency_variation = 0.01
 
 """ Regime we are probing and angular resolution, in degrees"""
 short_wavelength_regime = True
-delta_zeta = 10
+delta_zeta = 1
 
 
 def normalize(vector):
@@ -150,6 +150,7 @@ ax.set_zlabel('Z')
 plt.xticks(np.arange(-1, 1, .5))
 plt.yticks(np.arange(-1, 1, .5))
 plt.title('Angular positions of the sources')
+plt.savefig("sources.png")
 plt.show()
 
 """ Getting data for the reference detector """
@@ -163,6 +164,7 @@ plt.plot(timeline, signal, '-')
 plt.xlabel('t (seconds)')
 plt.ylabel('X(t)')
 plt.title('Signal for the reference detector')
+plt.savefig("signal_reference.png")
 plt.show()
 
 """ Spectrum of the signal """
@@ -171,6 +173,7 @@ plt.plot(frequencies, np.abs(fourier_image),'r-')
 plt.xlabel('f (Hz)')
 plt.ylabel('$\sqrt{S_X(f)}$')
 plt.title('Power spectrum of the signal for the reference detector')
+plt.savefig("spectrum_reference.png")
 plt.show()
 
 """ Let's add two more detectors """
@@ -199,6 +202,7 @@ plt.plot(tau, xcorrelator, '-')
 plt.xlabel('t (seconds)')
 plt.ylabel('x-corr(t)')
 plt.title('correlation')
+plt.savefig("cross_correlator.png")
 plt.show()
 
 #frequencies, x_fourier_image = zip(*Fourier(zip(tau, xcorrelator), sampling_time))
@@ -214,6 +218,7 @@ plt.plot(frequencies, np.real(x_fourier_image),'r-')
 plt.xlabel('f (Hz)')
 plt.ylabel('$S_c(f)$')
 plt.title('Cross-spectrum')
+plt.savefig("spectrum_cross.png")
 plt.show()
 
 
@@ -221,8 +226,8 @@ plt.show()
 ratios = []
 
 if short_wavelength_regime:
-    distance1 = 300
-    distance2 = 400
+    distance1 = 3000
+    distance2 = 300
 else:
     distance1 = 0.001
     distance2 = 0.0001
@@ -260,11 +265,23 @@ for zeta in zetas:
 
     ratios.append(S_cross/S_d1)
     
-plt.plot(zetas, ratios,'go-')
+fig, ay = plt.subplots()
+ay.plot(zetas, ratios,'go-')
+
+if short_wavelength_regime:
+    ratios_mean = np.mean(ratios)
+    ratios_std = np.std(ratios)
+    print 'Level position: ' + str(ratios_mean) + ' +/- ' + str(ratios_std)
+    ay.axhspan(ratios_mean-ratios_std, ratios_mean+ratios_std, alpha=0.5, color='green')
+    ay.axhline(y=ratios_mean, linestyle='dashed')
 
 plt.xlabel('$\zeta$, rad')
 plt.title('Angular curve')
-plt.show()
 
 if short_wavelength_regime:
-    print 'Level position: ' + str(np.mean(ratios)) + ' +/- ' + str(np.var(ratios))
+    plt.savefig("angular_short.png")
+else:
+    plt.savefig("angular_long.png")
+    
+plt.show()
+
