@@ -17,8 +17,8 @@ frequency_mean = 0.1
 frequency_variation = 0.01
 
 """ Regime we are probing and angular resolution, in degrees"""
-short_wavelength_regime = True
-delta_zeta = 1
+short_wavelength_regime = False
+delta_zeta = 10
 
 
 def normalize(vector):
