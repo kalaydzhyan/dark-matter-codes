@@ -8,7 +8,7 @@ mass = 1 # mass of the scalar field, add it later
 
 """ Properties of the source frequencies """
 frequency_mean = 0.1
-frequency_variation = 0.01
+frequency_variation = 1
 
 
 def normalize(vector):
@@ -52,8 +52,9 @@ class Source:
         else:
             name = set_name
             
-        amplitude   = 10 * np.random.random()
-        frequency   = np.random.normal(frequency_mean, frequency_variation)
+        amplitude   = 10 + np.random.random()
+        """ Flat spectrum: """
+        frequency   = (np.random.random()-1/2)*frequency_variation
         sin_delta   = (np.random.random() - 0.5) * 2
         alpha       = 2 * math.pi * np.random.random()
         phase       = 2 * math.pi * np.random.random()
@@ -103,7 +104,7 @@ class Detector:
             
     def noise(self, t):
         
-        amplitude=0
+        amplitude=1000
         mean = 0
         std = 1
 
@@ -145,55 +146,3 @@ def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, 
     # Print New Line on Complete
     if iteration == total: 
         print '\n'
-
-def distance(X, Y):
-    XY = np.array(X) - np.array(Y)
-    return np.sqrt(np.inner(XY, XY))
-"""
-def simple_correlator(X, Y):
-    result = []
-    for t in 
-"""
-if __name__ == '__main__':
-    print "\n Test run of the library.\n"
-
-    number_sources = 1000
-    observation_time = 1000
-    sampling_time = 1
-    
-    timeline = [t for t in np.arange(0, observation_time, sampling_time)]
-    
-    sources = Source()
-    for source_number in range(number_sources): 
-        sources.add()
-
-    detector0 = Detector()
-    signal0 = [sources.signal(t, detector0.position) \
-        for t in np.arange(0, observation_time, sampling_time)]
-
-    detector1 = Detector([1, 0, 0])
-    signal1 = [sources.signal(t, detector1.position) \
-        for t in np.arange(0, observation_time, sampling_time)]
-
-    detector2 = Detector([np.sin(0.3), np.cos(0.3), 0])
-    signal2 = [sources.signal(t, detector2.position) \
-        for t in np.arange(0, observation_time, sampling_time)]
-    
-    signal1 = np.array(signal1)-np.array(signal0)
-    signal2 = np.array(signal2)-np.array(signal0)
-    
-    xcorrelator_full = np.correlate(signal1, signal2, 'full')
-    xcorrelator = np.array([xcorrelator_full[t] for t in 
-        range(np.int(len(xcorrelator_full)/2),len(xcorrelator_full))])
-    tau = range(0, len(xcorrelator), sampling_time)
-    averaging_factor = np.array([observation_time-t*sampling_time for t in tau ])
-    xcorrelator /= averaging_factor
-    
-    plt.plot(tau[:-200], xcorrelator[:-200], '-')
-    plt.xlabel('$\\tau$ (seconds)')
-    plt.ylabel('x-corr(t)')
-    plt.title('correlation')
-    plt.savefig("cross_correlator.png")
-    plt.show()
-    
-    print 'Distance between detectors: ', distance(detector1.position, detector2.position)
