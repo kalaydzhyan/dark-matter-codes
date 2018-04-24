@@ -104,7 +104,7 @@ class Detector:
             
     def noise(self, t):
         
-        amplitude=1000
+        amplitude=0.05
         mean = 0
         std = 1
 
@@ -146,3 +146,86 @@ def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, 
     # Print New Line on Complete
     if iteration == total: 
         print '\n'
+
+def distance(X, Y):
+    XY = np.array(X) - np.array(Y)
+    return np.sqrt(np.inner(XY, XY))
+
+if __name__ == '__main__':
+    print "\n Test run of the library.\n"
+
+    number_sources = 1000
+    observation_time = 200
+    sampling_time = 1
+
+    distance1 = 0.001
+    distance2 = 0.0001
+    delta_zeta = 10  
+
+    timeline = [t for t in np.arange(0, observation_time, sampling_time)]
+    
+    sources = Source()
+    for source_number in range(number_sources): 
+        sources.add()
+
+    detector0 = Detector()
+    signal0 = [sources.signal(t, detector0.position) \
+        for t in np.arange(0, observation_time, sampling_time)]
+
+    ratios = []
+
+    zetas = np.arange(0, math.pi, np.deg2rad(delta_zeta))
+    timeline = np.arange(0, observation_time, sampling_time)
+
+    for zeta in zetas:
+        detector1 = Detector([distance1, 0, 0])
+        signal1 = [sources.signal(t, detector1.position) + detector1.noise(t) \
+                       for t in timeline]
+
+        detector2 = Detector([distance2 * np.cos(zeta), distance2 * np.sin(zeta), 0])
+        signal2 = [sources.signal(t, detector2.position) + detector2.noise(t) \
+                       for t in timeline]
+
+        signal1 = np.array(signal1) - np.array(signal0)
+        signal2 = np.array(signal2) - np.array(signal0)
+        
+        frequencies, signal1image = zip(*Fourier(zip(timeline, signal1), sampling_time))
+        frequencies, signal2image = zip(*Fourier(zip(timeline, signal2), sampling_time))
+    
+        x_fourier_image = signal1image * np.conj(signal2image)
+    
+        if frequency_variation*observation_time < 1:
+            print 'Frequency variation must be larger than observation time, cannot resolve!'
+    
+        #left_f = int((frequency_mean - frequency_variation) * observation_time)
+        #right_f = int((frequency_mean + frequency_variation) * observation_time)
+        
+        left_f = 1
+        right_f = observation_time - 1
+        
+        cross_spectrum_f = np.real(np.array(x_fourier_image))
+        S_cross = np.mean(cross_spectrum_f[left_f:right_f])
+        detector1_spectrum_f = np.abs(np.array(signal1image))**2
+        S_d1 = np.mean(detector1_spectrum_f[left_f:right_f])
+
+        ratios.append(S_cross/S_d1)
+    
+    fig, ay = plt.subplots()
+    ay.plot(zetas, ratios,'go', zetas, (distance2/distance1)*np.cos(zetas),'g-')
+
+    plt.xlabel('$\zeta$, rad')
+    plt.title('Angular curve')
+    plt.savefig("angular_long_noise.png")
+
+    plt.show()
+
+    """
+    noise_record = [detector0.noise(t) for t in timeline]
+    frequencies, noise_image = zip(*Fourier(zip(timeline, noise_record), sampling_time))
+
+    plt.plot(frequencies, np.abs(noise_image),'r-') 
+    plt.xlabel('f (Hz)')
+    plt.ylabel('$\sqrt{S_X(f)}$')
+    plt.title('Power spectrum of the noise for the reference detector')
+    plt.show()
+    """

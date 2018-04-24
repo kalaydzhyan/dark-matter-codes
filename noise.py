@@ -30,6 +30,7 @@ for source_number in range(number_sources):
 
 """ Getting data for the reference detector """
 detector0 = Detector()
+""" No noise for the reference detector, because it is correlated """
 data = [(t, sources.signal(t, detector0.position) + 0*detector0.noise(t)) \
         for t in np.arange(0, number_sessions*observation_time, sampling_time)]
 timeline, signal = zip(*data)
