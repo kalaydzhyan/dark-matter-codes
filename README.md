@@ -1,6 +1,6 @@
-# Dark matter tests
+# Dark matter and gravity tests
 
-The project deals with dark matter detection methods with space detectors. More codes will be added with time.
+The project deals with dark matter detection methods with atomic sensors, as well as with tests of general relativity with atomic clocks. More codes will be added with time.
 
 ## curve.py + main.py
 
@@ -24,3 +24,12 @@ Angle step (in degrees) for the calculation of the angular function, number of w
 ## noise.py + main1.py
 
 Similar code, to test the signal-to-noise ratio dependence on the observation time. File **main1.py** added temporarily, to use a flat power spectrum of scalar waves, instead of quasi-monochromatic in **main.py**.
+
+## relativistic_test.ipynb + two_way.ipynb
+
+Jupyter data analysis files for one-way and two-way microwave links between a clock on ground and on-board of the International Space Station. The code extracts clock desynchronization from the pseudoranges and atmospheric delays and generates theoretical predictions derived from General Relativity.
+
+## batch_output.ipynb + batch_output.py
+
+Python files for automatic processing of the ISS clock data (all paths should be modified).
+
