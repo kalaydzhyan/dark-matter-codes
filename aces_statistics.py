@@ -121,7 +121,8 @@ def collect_trajectories(dataset_number = 0):
     return gs_orbit, iss_orbit
     
     
-""" one-way relativistic effect, theory and experiment"""
+""" one-way relativistic effect, theory and experiment."""
+""" Theory, as defined by SYRTE, needs to be corrected later! """
 
 def relativistic_effect(dataframe, frequency_n = '1'):
     
@@ -174,7 +175,7 @@ if __name__ == '__main__':
     assert np.absolute(data1["coord.time"][0] - data2["coord.time"][0]) < 2e-3
     
 
-    """ one-way relativistic effect, experimental residuals """
+    """ theoretical and experimental residuals """
     
     data1 = relativistic_effect(data1, frequency_n = '1')
     data2 = relativistic_effect(data2, frequency_n = '2')
@@ -182,4 +183,8 @@ if __name__ == '__main__':
     data1.plot(x = 'coord.time', y = ["rel.effect_experiment", "rel.effect_theory"])
     data1.plot(x = 'coord.time', y = ["difference"])
     
-    print "Difference, theory vs. experiment: ", np.mean(data1['difference']), ' +/- ', np.std(data1['difference'])
+    data2.plot(x = 'coord.time', y = ["rel.effect_experiment", "rel.effect_theory"])
+    data2.plot(x = 'coord.time', y = ["difference"])
+    
+    print "uplink difference, theory vs. experiment: ", np.mean(data1['difference']), ' +/- ', np.std(data1['difference'])
+    print "downlink difference, theory vs. experiment: ", np.mean(data2['difference']), ' +/- ', np.std(data2['difference'])
