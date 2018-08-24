@@ -37,9 +37,10 @@ def position_by_time(dataframe, time):
         array = dataframe['coord.time']
         idx = np.searchsorted(array, time, side="left")[0]
         delta_t = time - dataframe['coord.time'][idx-1]
-        """ Interpolating, assuming 1 sec sampling """ 
+        """ Interpolating """ 
         object_position = position(dataframe, idx-1) + \
-            (position(dataframe, idx)-position(dataframe, idx-1))*delta_t
+            (position(dataframe, idx)-position(dataframe, idx-1))\
+            *delta_t/(dataframe['coord.time'][idx]-dataframe['coord.time'][idx-1])
     else:
         print "Cannot find the specified coordinate time!"
     
@@ -52,9 +53,10 @@ def velocity_by_time(dataframe, time):
         array = dataframe['coord.time']
         idx = np.searchsorted(array, time, side="left")[0]
         delta_t = time - dataframe['coord.time'][idx-1]
-        """ Interpolating, assuming 1 sec sampling """ 
+        """ Interpolating """ 
         object_velocity = velocity(dataframe, idx-1) + \
-            (velocity(dataframe, idx)-velocity(dataframe, idx-1))*delta_t
+            (velocity(dataframe, idx)-velocity(dataframe, idx-1))\
+            *delta_t/(dataframe['coord.time'][idx]-dataframe['coord.time'][idx-1])
     else:
         print "Cannot find the specified coordinate time!"
     
